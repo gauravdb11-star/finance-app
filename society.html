@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Summary</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+</head>
+<body class="dark-theme">
+
+<div class="sidebar">
+    <button class="menu-button" style="background: none; border: none; padding: 10px; cursor: pointer;">
+        <img src="icons/menu.png" alt="Menu Icon" class="icon">     
+    </button>
+
+    <ul>
+        <li><a href="dashboard.html"><img src="icons/dashboard.png" alt="Dashboard Icon" class="icon"> <span>Dashboard</span></a></li>
+        <li><a href="transaction.html"><img src="icons/transactions.png" alt="Transactions Icon" class="icon"> <span>Transaction Tables</span></a></li>
+        <li><a href="society.html"><img src="icons/society.png" alt="Society Icon" class="icon"> <span>Society Cutting</span></a></li>
+    </ul>
+</div>
+
+<div class="main-content">
+    <div class="container-fluid mt-2"> 
+        <div class="row align-items-center gx-2">
+            <div class="col-md-2 text-center">
+                </div>
+            <div class="col-md-7 text-center">
+                <h3>Loan Summary</h3>
+            </div>
+            <div class="col-md-2 text-center">
+                <h5 id="systemDate"></h5>
+                <h6 id="systemTime"></h6>
+            </div>
+            <div class="col-md-1 text-end">
+                <button class="profile-btn" id="profileButton">
+                    <img src="icons/your-profile.jpg" alt="Profile">
+                </button>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <p id="usernameDisplay">User Name</p>
+                    <button class="logout-button" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-2">
+        <div class="row align-items-stretch gx-2">        
+            <div class="card-container mt-4 w-100">
+                <div class="card"><h5>Remaining Principal</h5><h3 id="remainingPrincipal">0</h3></div>
+                <div class="card"><h5>Total Society Cutting</h5><h3 id="totalSocietyCutting">0</h3></div>
+                <div class="card"><h5>Actual Cutting</h5><h3 id="actualCutting">0</h3></div>
+                <div class="card"><h5>Difference</h5><h3 id="difference">0</h3></div>
+                <div class="card"><h5>Loan Closure</h5><h3 id="loanClosure">0</h3></div>
+                <div class="card"><h5>Sum Total Society Cutting</h5><h3 id="sumTotalSociety">0</h3></div>
+                <div class="card"><h5>Sum Actual Cutting</h5><h3 id="sumActualCutting">0</h3></div>
+                <div class="card"><h5>Sum Difference</h5><h3 id="sumDifference">0</h3></div>
+            </div>
+         </div>
+    </div>
+    
+    <div class="table-container mt-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>MONTH & YEAR</th>
+                    <th>PRINCIPAL BALANCE</th>
+                    <th>MONTHLY INTEREST</th>
+                    <th>TOTAL SOC CUTTING</th>
+                    <th>ACTUAL SOC CUTTING</th>
+                    <th>DIFFERENCE</th>
+                </tr>
+            </thead>
+            <tbody id="loanTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function updateDateTime() {
+    const now = new Date();
+    const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+    document.getElementById("systemDate").textContent = now.toLocaleDateString('en-US', dateOptions);
+    document.getElementById("systemTime").textContent = now.toLocaleTimeString('en-US', timeOptions);
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
+</script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/dashboard.js"></script>
+<script src="assets/js/main/app.js"></script>
+<script src="assets/js/main/profile-btn.js"></script>
+<script src="assets/js/js.cookie.min.js"></script>
+</body>
+</html>

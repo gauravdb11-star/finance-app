@@ -1,0 +1,114 @@
+/* Sidebar Styling */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 60px; /* Thin column by default */
+    height: 100%;
+    background-color: #121212;
+    color: #FFFFFF;
+    overflow-x: hidden;
+    transition: width 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Expanded Sidebar */
+.sidebar.expanded {
+    width: 250px;
+    padding-left: 2px;
+}
+
+.menu-button, 
+.sidebar ul, 
+.sidebar ul li, 
+.sidebar ul li a {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    width: 100%;
+    padding: 2px;
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+    margin-left: 2px;
+}
+
+/* Sidebar Links */
+.sidebar ul {
+    padding: 0;
+    margin: 0;
+    flex-direction: column;
+}
+
+.sidebar ul li {
+    list-style: none;
+}
+
+.sidebar ul li a {
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar ul li a:hover {
+    background: #0FA4AF;
+    color: #003135;
+}
+
+/* Hide text when sidebar is collapsed */
+.sidebar:not(.expanded) ul li a span,
+.sidebar:not(.expanded) .menu-button span {
+    display: none;
+}
+
+/* Upload CSV Section */
+.upload-text {
+    font-size: 14px;
+}
+
+.sidebar:not(.expanded) .upload-text {
+    display: block;
+    font-size: 10px;
+    text-align: center;
+}
+
+.sidebar:not(.expanded) .upload-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar.expanded ul li a span,
+.sidebar.expanded .menu-button span,
+.sidebar.expanded .upload-section span {
+    display: inline;
+}
+
+.upload-section {
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#csvFile {
+    display: none;
+}
+
+/* Filters inside Sidebar */
+.filter-section {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    width: 100%;
+    padding: 0 10px; /* Added slight padding so it doesn't touch edges */
+}
+
+.filter-section label {
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-top: 5px;
+    display: block;
+}

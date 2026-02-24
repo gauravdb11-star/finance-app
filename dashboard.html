@@ -1,0 +1,308 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Dashboard</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/summery-card.css">
+</head>
+<body class="dark-theme">
+
+<div class="sidebar">
+    <button class="menu-button" style="background: none; border: none; padding: 10px; cursor: pointer;">
+        <img src="icons/menu.png" alt="Menu Icon" class="icon">     
+    </button>
+
+    <ul>
+        <li><a href="dashboard.html"><img src="icons/dashboard.png" alt="Dashboard Icon" class="icon"> <span>Dashboard</span></a></li>
+        <li><a href="transaction.html"><img src="icons/transactions.png" alt="Transactions Icon" class="icon"> <span>Transaction Tables</span></a></li>
+        <li><a href="society.html"><img src="icons/society.png" alt="Society Icon" class="icon"> <span>Society Cutting</span></a></li>
+    </ul>
+
+	<div class="upload-section">
+        <h5 id="uploadTrigger" style="cursor: pointer;">
+            <img src="icons/upload.png" alt="Upload Icon" class="icon"> 
+            <span class="upload-text">Upload File</span>
+        </h5>
+        <input type="file" id="excelFile" class="form-control" accept=".xls,.xlsx,.json" style="display: none;" />
+    </div>
+
+    <div class="filter-section mt-4">
+        <h6>Filters</h6>
+        <label for="categoryFilter">Category</label>
+        <select id="categoryFilter" class="form-control">
+            <option value="">All Categories</option>
+        </select>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="container-fluid mt-2"> 
+        <div class="row align-items-center gx-2">
+            <div class="col-md-2 text-center">
+                <div class="card" style="background-color: orange; color: white;">
+                    <div class="card-body text-center">
+                        <h5 style="font-size: 14px; margin-bottom: 5px;">Available Balance</h5>
+                        <h3 id="netBalance" style="font-size: 22px; font-weight: bold;">0</h3>
+                    </div>
+                </div>       
+            </div>
+            <div class="col-md-7 text-center">
+                <h2>FINANCIAL DASHBOARD</h2>
+            </div>
+            <div class="col-md-2 text-center">
+                <h5 id="systemDate"></h5>
+                <h6 id="systemTime"></h6>
+            </div>
+            <div class="col-md-1 text-end">
+                <button class="profile-btn" id="profileButton">
+                    <img src="icons/your-profile.jpg" alt="Profile">
+                </button>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <p id="usernameDisplay">User Name</p>
+                    <button class="logout-button" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-2">
+        <div class="row align-items-stretch gx-2">
+            <div class="col-md-1 d-flex flex-column reduced-chart-height">
+                <div class="card bg-success text-white flex-fill mb-2">
+                    <div class="card-body d-flex flex-column text-center">
+                        <h5 style="font-size: 12px; margin-bottom: 5px;">Total Income</h5>
+                        <h3 id="totalIncome" style="font-size: 20px; font-weight: bold;">0</h3>
+                    </div>
+                </div>
+                <div class="card bg-danger text-white flex-fill">
+                    <div class="card-body d-flex flex-column text-center">
+                        <h5 style="font-size: 12px; margin-bottom: 5px;">Total Expenses</h5>
+                        <h3 id="totalExpenses" style="font-size: 20px; font-weight: bold;">0</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 d-flex flex-column spending-column">
+                <div class="card chart-container categoryChart-container">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-center">Category-Wise Spending</h5>
+                        <canvas id="categoryChart"></canvas>
+                    </div>           
+                </div>
+            </div>
+
+            <div class="col-md-7 d-flex flex-column spending-column">
+                <div class="card flex-fill">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-center">Spendings</h5>
+                        <div class="container-fluid spending-grid flex-grow-1">
+                            <div class="row">
+                                <div class="col custom-width spending-cell">
+                                    <img src="icons/home-loan.png" class="spending-icon" alt="Home Loan">
+                                    <h6>Home Loan</h6>
+                                    <p id="HOME LOAN">$0</p>
+                                </div>
+                                <div class="col custom-width spending-cell">
+                                    <img src="icons/credit-card.png" class="spending-icon" alt="Credit Card">
+                                    <h6>Credit Card</h6>
+                                    <p id="CREDIT CARD">$0</p>
+                                </div>
+                                <div class="col custom-width spending-cell">
+                                    <img src="icons/hospital.png" class="spending-icon" alt="Hospital">
+                                    <h6>Hospital</h6>
+                                    <p id="HOSPITAL">$0</p>
+                                </div>
+                                <div class="col custom-width spending-cell">
+                                    <img src="icons/insurance.png" class="spending-icon" alt="Insurance">
+                                    <h6>Insurance</h6>
+                                    <p id="INSURANCE">$0</p>
+                                </div>
+                                <div class="col custom-width spending-cell">
+                                    <img src="icons/food.png" class="spending-icon" alt="Food">
+                                    <h6>Food</h6>
+                                    <p id="FOOD">$0</p>
+                                </div>      
+                            </div>
+                            <div class="row">
+                                <div class="col custom-width spending-cell">
+                                    <img src="icons/travel.png" class="spending-icon" alt="Travel">
+                                    <h6>Travel</h6>
+                                    <p id="TRAVEL">$0</p>
+                                </div>
+                                <div class="col custom-width spending-cell">
+                                    <img src="icons/investment.png" class="spending-icon" alt="Investment">
+                                    <h6>Investment</h6>
+                                    <p id="INVESTMENT">$0</p>
+                                </div>
+                                <div class="col custom-width spending-cell">
+                                    <img src="icons/recharge.png" class="spending-icon" alt="Recharge">
+                                    <h6>Recharge</h6>
+                                    <p id="RECHARGE">$0</p>
+                                </div>
+                                <div class="col custom-width spending-cell">
+                                    <img src="icons/movie.png" class="spending-icon" alt="Movie">
+                                    <h6>Movie</h6>
+                                    <p id="MOVIE">$0</p>
+                                </div>
+                                <div class="col custom-width spending-cell">
+                                    <img src="icons/misc.png" class="spending-icon" alt="Misc">
+                                    <h6>Misc</h6>
+                                    <p id="MISC">$0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-2">
+        <div class="row align-items-stretch gx-2">
+            <div class="col-md-5 d-flex flex-column">
+                <div class="card flex-fill fixed-height-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title">Spending & Earnings Calendar</h5>
+                            <div class="calendar-filters">           
+                                <select id="calendarYear" class="form-control"></select>
+                                <select id="calendarMonth" class="form-control"></select>
+                            </div>
+                        </div>
+                        <div id="customCalendar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 d-flex flex-column">
+                <div class="card flex-fill fixed-height-card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Last 9 Spendings</h5>
+                        <ul id="last6Spendings" class="list-group list-group-flush text-center">
+                            </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 d-flex flex-column">
+                <div class="card flex-fill fixed-height-card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Monthly Expense Trend</h5>
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-2 mb-4">
+        <div class="row align-items-stretch gx-2">
+            <div class="col-md-3 d-flex flex-column">
+                <div class="card flex-fill">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">60-30-10 Budget</h5>
+                        <canvas id="budgetChart"></canvas>
+                        <p class="mt-2"><strong>Available Cash:</strong> ₹<span id="availableCash">0</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 d-flex flex-column">
+                <div class="card flex-fill">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Need Category Budget</h5>
+                        <div id="needProgressWrapper">
+                            <p><strong>Total Budget: </strong> ₹<span id="needTotal">0.00</span></p>
+                            <p><strong>Spent: </strong> ₹<span id="needSpent">0.00</span></p>
+                            <p><strong>Remaining: </strong> ₹<span id="needRemaining">0.00</span></p>
+                            <div class="progress" style="height: 30px;">
+                                <div id="needProgress" class="progress-bar bg-danger" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div id="needSubcategories" class="mt-3">
+                            </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 d-flex flex-column">
+                <div class="card flex-fill">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Want Category Budget</h5>
+                        <div id="wantProgressWrapper">
+                            <p><strong>Total Budget: </strong> ₹<span id="wantTotal">0.00</span></p>
+                            <p><strong>Spent: </strong> ₹<span id="wantSpent">0.00</span></p>
+                            <p><strong>Remaining: </strong> ₹<span id="wantRemaining">0.00</span></p>
+                            <div class="progress" style="height: 30px;">
+                                <div id="wantProgress" class="progress-bar bg-warning" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div id="wantSubcategories" class="mt-3">
+                             </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 d-flex flex-column">
+                <div class="card flex-fill">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Saving Category Budget</h5>
+                        <div id="savingProgressWrapper">
+                            <p><strong>Total Budget: </strong> ₹<span id="savingTotal">0.00</span></p>
+                            <p><strong>Spent: </strong> ₹<span id="savingSpent">0.00</span></p>
+                            <p><strong>Remaining: </strong> ₹<span id="savingRemaining">0.00</span></p>
+                            <div class="progress" style="height: 30px;">
+                                <div id="savingProgress" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div id="savingSubcategories" class="mt-3">
+                             </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateDateTime() {
+    const now = new Date();
+    const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+    document.getElementById("systemDate").textContent = now.toLocaleDateString('en-US', dateOptions);
+    document.getElementById("systemTime").textContent = now.toLocaleTimeString('en-US', timeOptions);
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
+   
+// FIX: Changed "csvFile" to "excelFile" so the window opens!
+document.getElementById("uploadTrigger").addEventListener("click", function() {
+    document.getElementById("excelFile").click(); 
+});
+
+// NEW: Trigger Backup
+document.getElementById("backupTrigger").addEventListener("click", function() {
+    if (typeof downloadBackup === "function") {
+        downloadBackup();
+    }
+});
+</script>
+
+<script src="assets/js/chart.umd.min.js"></script>
+<script src="assets/js/js.cookie.min.js"></script>
+<script src="assets/js/xlsx.full.min.js"></script>
+<script src="assets/js/main/calendar.js"></script>
+<script src="assets/js/main/transactions.js"></script>
+<script src="assets/js/main/app.js"></script>
+<script src="assets/js/main/filters.js"></script>
+<script src="assets/js/main/summary.js"></script>
+<script src="assets/js/main/budget.js"></script>
+<script src="assets/js/main/dashboard-charts.js"></script>
+<script src="assets/js/main/profile-btn.js"></script>
+
+</body>
+</html>

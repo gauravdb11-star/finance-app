@@ -1,0 +1,204 @@
+/* =========================================
+   1. GLOBAL STYLES
+   ========================================= */
+body {
+    background-color: #000000; /* Pure Black */
+    color: #FFFFFF;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.main-content {
+    margin-left: 60px; /* Space for thin sidebar */
+    padding: 5px;
+    background-color: #000000;
+    color: #FFFFFF;
+    transition: margin-left 0.4s ease;
+}
+
+.main-content.shifted {
+    margin-left: 250px; /* Space for expanded sidebar */
+}
+
+/* =========================================
+   2. REUSABLE COMPONENTS (Cards, Tables)
+   ========================================= */
+.card {
+    background-color: #121212; /* Dark gray */
+    color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+}
+
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 12px;
+    background-color: #121212;
+    color: #AFDDE5;
+}
+
+.table th, .table td {
+    border: 1px solid #444;
+    padding: 6px;
+    text-align: center;
+}
+
+.table th {
+    background-color: #2A2A2A;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.table-container {
+     width: 100%;
+}
+
+/* =========================================
+   3. DASHBOARD CHARTS
+   ========================================= */
+.categoryChart-container .card-body {
+    padding: 10px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.categoryChart-container .card-title {
+    font-size: 14px !important;
+    margin-bottom: 5px !important;
+    text-align: center;
+}
+
+.categoryChart-container canvas {
+    max-width: 100% !important;
+    max-height: 200px !important;
+    display: block;
+}
+
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+    background-color: #121212;
+    color: #FFFFFF;
+    border-radius: 8px;
+    padding: 8px;
+    overflow: hidden;
+}
+
+.categoryChart-container .chart-legend,
+.chart-container .chart-title,
+.chart-container .chart-axis-labels,
+.chart-container .chart-axis {
+    font-size: 8px;
+    font-weight: normal;
+    color: #AFDDE5 !important;
+}
+
+/* =========================================
+   4. SOCIETY LOAN DASHBOARD CARDS
+   ========================================= */
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.card-container .card {
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #003135; /* Dark text for contrast */
+}
+
+/* Society Card Colors */
+.card-container .card:nth-child(1) { background-color: #007bff; color: white;} /* Blue */
+.card-container .card:nth-child(2) { background-color: #28a745; color: white;} /* Green */
+.card-container .card:nth-child(3) { background-color: #ffc107; } /* Yellow */
+.card-container .card:nth-child(4) { background-color: #dc3545; color: white;} /* Red */
+.card-container .card:nth-child(n+5) { background-color: #0FA4AF; } /* Default Teal for rest */
+
+/* =========================================
+   5. PROFILE DROPDOWN BUTTON
+   ========================================= */
+.profile-btn {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid white;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.profile-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100px;
+    background: rgba(30, 41, 59, 0.6);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    display: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 200px;
+    z-index: 10;
+    backdrop-filter: blur(5px);
+}
+
+.profile-dropdown p {
+    margin: 5px 10px;
+    font-size: 14px;
+}
+
+.logout-button {
+    width: 90%;
+    padding: 8px;
+    background: #F43F5E;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 10px auto;
+    display: block;
+}
+
+.logout-button:hover {
+    background: #D63246;
+}
+
+/* =========================================
+   6. LOGIN PAGE
+   ========================================= */
+.login-container {
+    width: 300px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: #024950;
+    border: 1px solid #0FA4AF;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(15, 164, 175, 0.2);
+    text-align: center;
+}
