@@ -10,15 +10,15 @@ body {
 }
 
 .main-content {
-    margin-left: 60px; /* Space for thin sidebar */
+    margin-left: 75px; /* Matches new collapsed sidebar width */
     padding: 5px;
     background-color: #000000;
     color: #FFFFFF;
-    transition: margin-left 0.4s ease;
+    transition: margin-left 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Matches sidebar glide */
 }
 
 .main-content.shifted {
-    margin-left: 250px; /* Space for expanded sidebar */
+    margin-left: 260px; /* Matches new expanded sidebar width */
 }
 
 /* =========================================

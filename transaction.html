@@ -12,18 +12,20 @@
 <body class="dark-theme">
 
 <div class="sidebar">
-    <button class="menu-button" style="background: none; border: none; padding: 10px; cursor: pointer;">
-        <img src="icons/menu.png" alt="Menu Icon" class="icon">     
-    </button>
+    <div class="menu-button-wrapper">
+        <button class="menu-button">
+            <img src="icons/menu.png" alt="Menu Icon" class="icon"> <span>Menu</span>
+        </button>
+    </div>
 
     <ul>
         <li><a href="dashboard.html"><img src="icons/dashboard.png" alt="Dashboard Icon" class="icon"> <span>Dashboard</span></a></li>
-        <li><a href="transaction.html"><img src="icons/transactions.png" alt="Transactions Icon" class="icon"> <span>Transaction Tables</span></a></li>
+        <li><a href="transaction.html" class="active"><img src="icons/transactions.png" alt="Transactions Icon" class="icon"> <span>Transaction Tables</span></a></li>
         <li><a href="society.html"><img src="icons/society.png" alt="Society Icon" class="icon"> <span>Society Cutting</span></a></li>
     </ul>
 
     <div class="upload-section mt-3">
-        <h5 id="uploadTrigger" style="cursor: pointer;">
+        <h5 id="uploadTrigger">
             <img src="icons/upload.png" alt="Upload Icon" class="icon"> 
             <span class="upload-text">Upload File</span>
         </h5>
@@ -31,7 +33,7 @@
     </div>
 
     <div class="upload-section mt-3">
-        <h5 id="backupTrigger" style="cursor: pointer; color: #0FA4AF;">
+        <h5 id="backupTrigger">
             <img src="icons/misc.png" alt="Backup Icon" class="icon"> 
             <span class="upload-text">Backup Data</span>
         </h5>

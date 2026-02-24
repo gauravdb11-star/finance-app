@@ -1,114 +1,164 @@
-/* Sidebar Styling */
+/* =========================================
+   SIDEBAR GLIDE & LAYOUT
+   ========================================= */
 .sidebar {
     position: fixed;
     left: 0;
     top: 0;
-    width: 60px; /* Thin column by default */
+    width: 75px; /* Perfect width to center the icon with padding */
     height: 100%;
     background-color: #121212;
     color: #FFFFFF;
     overflow-x: hidden;
-    transition: width 0.3s ease;
+    /* Ultra-smooth glide animation */
+    transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1); 
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    padding-top: 15px;
+    z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5); /* Soft drop shadow */
 }
 
 /* Expanded Sidebar */
 .sidebar.expanded {
-    width: 250px;
-    padding-left: 2px;
+    width: 260px;
 }
 
-.menu-button, 
-.sidebar ul, 
-.sidebar ul li, 
-.sidebar ul li a {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0;
-    width: 100%;
-    padding: 2px;
-}
-
-.icon {
-    width: 40px;
-    height: 40px;
-    margin-left: 2px;
-}
-
-/* Sidebar Links */
+/* =========================================
+   MENU LIST & SPACING
+   ========================================= */
 .sidebar ul {
     padding: 0;
-    margin: 0;
+    margin: 20px 0;
+    width: 100%;
+    display: flex;
     flex-direction: column;
+    gap: 15px; /* INCREASED SPACE BETWEEN ICONS */
 }
 
 .sidebar ul li {
     list-style: none;
-}
-
-.sidebar ul li a {
-    color: inherit;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-}
-
-.sidebar ul li a:hover {
-    background: #0FA4AF;
-    color: #003135;
-}
-
-/* Hide text when sidebar is collapsed */
-.sidebar:not(.expanded) ul li a span,
-.sidebar:not(.expanded) .menu-button span {
-    display: none;
-}
-
-/* Upload CSV Section */
-.upload-text {
-    font-size: 14px;
-}
-
-.sidebar:not(.expanded) .upload-text {
-    display: block;
-    font-size: 10px;
-    text-align: center;
-}
-
-.sidebar:not(.expanded) .upload-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.sidebar.expanded ul li a span,
-.sidebar.expanded .menu-button span,
-.sidebar.expanded .upload-section span {
-    display: inline;
-}
-
-.upload-section {
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-#csvFile {
-    display: none;
-}
-
-/* Filters inside Sidebar */
-.filter-section {
-    margin-top: 10px;
-    font-size: 0.85rem;
     width: 100%;
-    padding: 0 10px; /* Added slight padding so it doesn't touch edges */
+    padding: 0 12px; /* Side padding so hover/active states don't touch edges */
+    box-sizing: border-box;
+}
+
+/* General link/button styling */
+.menu-button,
+.sidebar ul li a,
+.upload-section h5 {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #FFFFFF;
+    background: transparent;
+    border: none;
+    border-radius: 10px; /* Smooth rounded pill effect */
+    white-space: nowrap; /* PREVENTS JUMPING */
+    transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    box-sizing: border-box;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* Menu button specific wrapper */
+.menu-button-wrapper {
+    width: 100%;
+    padding: 0 12px;
+    box-sizing: border-box;
+}
+
+/* =========================================
+   ICON & TEXT RENDERING
+   ========================================= */
+.icon {
+    width: 32px;
+    height: 32px;
+    min-width: 32px; /* Prevents flexbox from squishing your 64px PNGs */
+    object-fit: contain;
+    margin-right: 18px; /* Strict space between icon and text */
+    transition: transform 0.3s ease;
+}
+
+/* Text hiding & revealing logic for smooth expanding */
+.sidebar span, .upload-text {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar.expanded span, .sidebar.expanded .upload-text {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0.1s; /* Waits for sidebar to start expanding before showing text */
+}
+
+/* =========================================
+   HOVER & ACTIVE STATES
+   ========================================= */
+.menu-button:hover,
+.sidebar ul li a:hover,
+.upload-section h5:hover {
+    background: rgba(15, 164, 175, 0.1); /* Very soft translucent teal */
+    color: #AFDDE5;
+}
+
+.sidebar ul li a:hover .icon,
+.upload-section h5:hover .icon {
+    transform: scale(1.1); /* Subtle pop on hover */
+}
+
+/* ACTIVE PAGE HIGHLIGHT */
+.sidebar ul li a.active {
+    background: rgba(15, 164, 175, 0.25); /* 25% opacity teal background */
+    color: #FFFFFF; /* Keep text bright white */
+    font-weight: bold;
+    box-shadow: inset 4px 0 0 0 #0FA4AF; /* Adds a sleek solid teal line on the left edge */
+}
+
+.sidebar ul li a.active .icon {
+    transform: scale(1.1);
+    /* The dark brightness filter has been completely removed so icons stay crisp! */
+}
+
+/* =========================================
+   UPLOAD & FILTER SECTIONS
+   ========================================= */
+.upload-section {
+    width: 100%;
+    padding: 0 12px;
+    box-sizing: border-box;
+    margin-top: 10px;
+}
+
+#csvFile, #excelFile {
+    display: none;
+}
+
+.filter-section {
+    margin-top: 20px;
+    padding: 0 20px;
+    width: 100%;
+    box-sizing: border-box;
+    opacity: 0; /* Hide filters when collapsed */
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.expanded .filter-section {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0.2s;
 }
 
 .filter-section label {
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin-top: 5px;
+    font-size: 12px;
+    color: #AFDDE5;
+    margin-bottom: 5px;
     display: block;
 }
