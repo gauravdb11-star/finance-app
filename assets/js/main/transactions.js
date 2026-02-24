@@ -250,12 +250,18 @@ function autoCategorize(parsedData, depositAmt, withdrawalAmt) {
 
 function processTransactions() {
     if (!window.transactions || window.transactions.length === 0) return;
+    
     if (typeof updateFilters === "function") updateFilters();
-    if (typeof updateNetBalance === "function") updateNetBalance(window.transactions);
-    if (typeof renderCharts === "function") renderCharts(window.transactions);
-    if (typeof updateTable === "function") updateTable(window.transactions);
-    if (typeof updateCalendarEvents === "function") updateCalendarEvents(window.transactions);
-    updateLast9Spendings();
+    
+    // Check if we are on the Dashboard (Calendar exists)
+    if (typeof updateCalendarEvents === "function") {
+        // Let the Calendar act as the Master Filter and update the tiles!
+        updateCalendarEvents(window.transactions); 
+    } else {
+        // If we are on the Transactions or Society page, update normally
+        if (typeof updateNetBalance === "function") updateNetBalance(window.transactions);
+        if (typeof updateTable === "function") updateTable(window.transactions);
+    }
 }
 
 window.updateCategory = function(txnId, newCategory) {
@@ -304,46 +310,4 @@ function updateTable(filteredData = window.transactions) {
         tableHeader.innerHTML = "";
         tableBody.innerHTML = "<tr><td colspan='100%' class='text-center'>No transactions found for these filters.</td></tr>";
     }
-}
-
-function updateLast9Spendings() {
-    const lastSpendingsEl = document.getElementById('last6Spendings');
-    if (!lastSpendingsEl) return;
-    lastSpendingsEl.innerHTML = '';
-    
-    const spendings = window.transactions
-        .filter(txn => txn["Withdrawal Amt."] || txn["Deposit Amt."])
-        .slice(-9).reverse();
-    
-    if (spendings.length === 0) return;
-
-    const table = document.createElement('table');
-    table.className = 'table table-striped table-dark mb-0';
-    table.style.backgroundColor = '#121212';
-    table.style.color = '#525859';
-    
-    const thead = document.createElement('thead');
-    thead.innerHTML = `<tr style="background-color: #2A2A2A;"><th>Date</th><th>Name/Reason</th><th>Category</th><th>Amount</th></tr>`;
-    
-    const tbody = document.createElement('tbody');
-    spendings.forEach(txn => {
-        const row = document.createElement('tr');
-        const amount = txn["Withdrawal Amt."] || txn["Deposit Amt."] || 0;
-        const isWithdrawal = txn["Withdrawal Amt."] > 0;
-        const formattedAmount = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
-        const displayName = txn.Name ? txn.Name : (txn.Reason ? txn.Reason : "Transaction");
-
-        row.innerHTML = `
-            <td>${txn.Date}</td>
-            <td title="${txn.Narration}">${displayName.substring(0, 20)}</td>
-            <td>${txn.Category}</td>
-            <td style="color: ${isWithdrawal ? '#FF5733' : '#28A745'}; font-weight: bold; font-size: 12px;">
-                ${isWithdrawal ? '↓' : '↑'} ${formattedAmount}
-            </td>
-        `;
-        tbody.appendChild(row);
-    });
-    table.appendChild(thead);
-    table.appendChild(tbody);
-    lastSpendingsEl.appendChild(table);
 }
