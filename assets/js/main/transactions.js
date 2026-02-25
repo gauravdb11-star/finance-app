@@ -273,13 +273,19 @@ window.updateCategory = function(txnId, newCategory) {
     }
 };
 
-function updateTable(filteredData = window.transactions) {
+// --- UPGRADED TABLE RENDERER ---
+window.updateTable = function(filteredData = window.transactions) {
     const tableHeader = document.getElementById("tableHeader");
     const tableBody = document.getElementById("transactionTable");
+    const rowCountEl = document.getElementById("rowCount");
 
-    if (!tableBody || !tableHeader) return; 
+    if (!tableBody || !tableHeader) return; // Failsafe if we are not on the transaction page
+    
     tableBody.innerHTML = "";
-    const columnsToDisplay = ["Date", "Name", "Reason", "Withdrawal Amt.", "Deposit Amt.", "Category"];
+    
+    if (rowCountEl) rowCountEl.textContent = filteredData.length;
+
+    const columnsToDisplay = ["Date", "Name", "Reason", "Withdrawal", "Deposit", "Category"];
 
     if (filteredData.length > 0) {
         tableHeader.innerHTML = `<tr>${columnsToDisplay.map(header => `<th>${header}</th>`).join('')}</tr>`;
@@ -288,26 +294,71 @@ function updateTable(filteredData = window.transactions) {
             const isUncat = row.Category === "Uncategorized";
             const tr = document.createElement("tr");
             
-            if (isUncat) tr.style.backgroundColor = "rgba(220, 53, 69, 0.2)";
+            // Soft red background for uncategorized rows to draw attention
+            if (isUncat) tr.style.backgroundColor = "rgba(220, 53, 69, 0.1)";
 
-            let html = "";
-            columnsToDisplay.forEach(col => {
-                if (col === "Category") {
-                    let selectHtml = `<select class="form-control form-control-sm" onchange="updateCategory('${row.id}', this.value)" style="background-color: ${isUncat ? '#ffb3b3' : '#2A2A2A'}; color: ${isUncat ? '#000' : '#fff'}; border: 1px solid #555;">`;
-                    CATEGORIES.forEach(cat => {
-                        selectHtml += `<option value="${cat}" ${row.Category === cat ? 'selected' : ''}>${cat}</option>`;
-                    });
-                    selectHtml += `</select>`;
-                    html += `<td>${selectHtml}</td>`;
-                } else {
-                    html += `<td>${row[col] !== undefined && row[col] !== null ? row[col] : ''}</td>`;
-                }
-            });
+            const withdrawal = parseFloat(row["Withdrawal Amt."] || 0);
+            const deposit = parseFloat(row["Deposit Amt."] || 0);
+            const formatMoney = (val) => val > 0 ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val) : '-';
+
+            let html = `
+                <td>${row.Date || ''}</td>
+                <td title="${row.Narration || ''}"><strong>${(row.Name || '').substring(0, 25)}</strong></td>
+                <td>${(row.Reason || '').substring(0, 20)}</td>
+                <td class="text-danger-custom">${formatMoney(withdrawal)}</td>
+                <td class="text-success-custom">${formatMoney(deposit)}</td>
+                <td>
+                    <select class="category-select" onchange="updateCategory('${row.id}', this.value)" style="${isUncat ? 'border-color: #FF5733; color: #FF5733;' : ''}">
+                        ${CATEGORIES.map(cat => `<option value="${cat}" ${row.Category === cat ? 'selected' : ''}>${cat}</option>`).join('')}
+                    </select>
+                </td>
+            `;
             tr.innerHTML = html;
             tableBody.appendChild(tr);
         });
     } else {
         tableHeader.innerHTML = "";
-        tableBody.innerHTML = "<tr><td colspan='100%' class='text-center'>No transactions found for these filters.</td></tr>";
+        tableBody.innerHTML = "<tr><td colspan='100%' class='text-center py-4 text-muted'>No transactions found.</td></tr>";
     }
-}
+};
+
+// --- NEW: SEARCH & FILTER LOGIC FOR TRANSACTIONS PAGE ---
+document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById("tableSearch");
+    const catFilter = document.getElementById("tableCategoryFilter");
+
+    // Populate Category Dropdown dynamically
+    if (catFilter) {
+        CATEGORIES.forEach(cat => {
+            if (cat !== "Uncategorized") { // Already added manually in HTML
+                const opt = document.createElement("option");
+                opt.value = cat;
+                opt.textContent = cat;
+                catFilter.appendChild(opt);
+            }
+        });
+    }
+
+    // Function to run the search
+    function applyTableFilters() {
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+        const selectedCat = catFilter ? catFilter.value : "";
+
+        const filtered = window.transactions.filter(txn => {
+            const name = (txn.Name || "").toLowerCase();
+            const reason = (txn.Reason || "").toLowerCase();
+            const narration = (txn.Narration || "").toLowerCase();
+            
+            const matchesSearch = name.includes(searchTerm) || reason.includes(searchTerm) || narration.includes(searchTerm);
+            const matchesCat = selectedCat === "" || txn.Category === selectedCat;
+
+            return matchesSearch && matchesCat;
+        });
+
+        updateTable(filtered);
+    }
+
+    // Attach listeners
+    if (searchInput) searchInput.addEventListener("input", applyTableFilters);
+    if (catFilter) catFilter.addEventListener("change", applyTableFilters);
+});
