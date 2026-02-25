@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Check if user is logged in
-    if (Cookies.get("loggedIn") && typeof showDashboard === "function") {
+    // 1. Check if user is logged in (SAFE VERSION - Prevents crashes if Cookies library is missing)
+    if (typeof Cookies !== "undefined" && Cookies.get("loggedIn") && typeof showDashboard === "function") {
         showDashboard();
     }
 
-    // Sidebar Toggle
+    // 2. Sidebar Toggle
     const menuButton = document.querySelector(".menu-button");
     if (menuButton) {
         menuButton.addEventListener("click", function () {
@@ -13,12 +13,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ✅ Load transactions from LocalStorage (Persistent across logins)
+    // 3. Load transactions from LocalStorage (Persistent across logins)
     const storedData = localStorage.getItem("transactions");
     if (storedData) {
         window.transactions = JSON.parse(storedData);
         if (typeof updateFilters === "function") updateFilters();
         
+        // Page-specific routing
         if (window.location.pathname.includes("dashboard.html")) {
             if (typeof processTransactions === "function") processTransactions();
         } else if (window.location.pathname.includes("transaction.html")) {
@@ -26,10 +27,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // ✅ Handle Excel Upload
+    // 4. Handle Excel Upload
     const excelFileInput = document.getElementById("excelFile");
     if (excelFileInput) {
-        excelFileInput.addEventListener("change", loadExcel);
+        excelFileInput.addEventListener("change", typeof loadExcel === "function" ? loadExcel : function(){});
     }
 });
 
@@ -38,6 +39,11 @@ function logout() {
     // We do NOT clear localStorage for 'transactions' here anymore, 
     // so data stays available for the next login!
     localStorage.removeItem("username"); 
-    Cookies.remove("loggedIn");
+    
+    // Safely remove cookie
+    if (typeof Cookies !== "undefined") {
+        Cookies.remove("loggedIn");
+    }
+    
     window.location.href = "login.html";
 }

@@ -23,78 +23,151 @@
         <li><a href="society.html" class="active"><img src="icons/society.png" alt="Society Icon" class="icon"> <span>Society Cutting</span></a></li>
     </ul>
 </div>
-
-<div class="main-content">
-    <div class="container-fluid mt-2"> 
-        <div class="row align-items-center gx-2">
-            <div class="col-md-2 text-center">
+<div class="main-content" id="mainContent">
+        <div class="d-flex justify-content-between align-items-center mb-4 pt-2 pe-3">
+			<div class="d-flex align-items-center">
+				<h2 style="font-weight: 700; color: #AFDDE5; margin: 0;">Society Loan Ledger</h2>
+		</div>   
+            <div class="text-end d-flex align-items-center gap-4">
+                <div class="text-end d-none d-sm-block">
+                    <div id="systemDate" style="font-size: 14px; font-weight: bold; color: #0FA4AF;"></div>
+                    <div id="systemTime" style="font-size: 12px; color: #888;"></div>
                 </div>
-            <div class="col-md-7 text-center">
-                <h3>Loan Summary</h3>
-            </div>
-            <div class="col-md-2 text-center">
-                <h5 id="systemDate"></h5>
-                <h6 id="systemTime"></h6>
-            </div>
-            <div class="col-md-1 text-end">
-                <button class="profile-btn" id="profileButton">
-                    <img src="icons/your-profile.jpg" alt="Profile">
+                <button class="btn" style="background-color: #0FA4AF; color: #121212; font-weight: bold;" data-bs-toggle="collapse" data-bs-target="#loanConfigPanel">
+                    ⚙️ Loan Settings
                 </button>
-                <div class="profile-dropdown" id="profileDropdown">
-                    <p id="usernameDisplay">User Name</p>
-                    <button class="logout-button" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+
+        <div class="collapse mb-4" id="loanConfigPanel">
+            <div class="card p-4" style="background: #1A1A1A; border: 1px solid #333; border-radius: 12px;">
+                <h5 style="color: #0FA4AF; margin-bottom: 20px;">Loan Parameters</h5>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label" style="font-size: 12px; color: #E0E0E0;">Initial Loan Amount</label>
+                        <input type="number" id="cfgLoanAmount" class="form-control modern-input" value="1233000">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" style="font-size: 12px; color: #E0E0E0;">Loan Start Date</label>
+                        <input type="month" id="cfgStartDate" class="form-control modern-input" value="2021-04">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" style="font-size: 12px; color: #E0E0E0;">Monthly Principal Cut</label>
+                        <input type="number" id="cfgPrincipal" class="form-control modern-input" value="12400">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" style="font-size: 12px; color: #E0E0E0;">Initial Interest Rate (%)</label>
+                        <input type="number" step="0.1" id="cfgInitialRate" class="form-control modern-input" value="10.0">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" style="font-size: 12px; color: #E0E0E0;">Rate Change Date</label>
+                        <input type="month" id="cfgChangeDate" class="form-control modern-input" value="2024-04">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" style="font-size: 12px; color: #E0E0E0;">New Interest Rate (%)</label>
+                        <input type="number" step="0.1" id="cfgNewRate" class="form-control modern-input" value="9.0">
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="w-100 p-2 rounded" style="background: #121212; border: 1px dashed #444;">
+                            <div class="d-flex justify-content-between text-center gap-2">
+                                <div>
+                                    <label style="font-size: 11px; color: #AFDDE5;">Shares</label>
+                                    <input type="number" id="cfgShares" class="form-control modern-input p-1 text-center" value="1000" style="font-size: 12px;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; color: #AFDDE5;">Savings</label>
+                                    <input type="number" id="cfgSavings" class="form-control modern-input p-1 text-center" value="300" style="font-size: 12px;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; color: #AFDDE5;">C D</label>
+                                    <input type="number" id="cfgCd" class="form-control modern-input p-1 text-center" value="500" style="font-size: 12px;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; color: #AFDDE5;">Charges</label>
+                                    <input type="number" id="cfgCharges" class="form-control modern-input p-1 text-center" value="20" style="font-size: 12px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 text-end">
+                    <button class="btn fw-bold px-4" style="background-color: #0FA4AF; color: #121212;" onclick="generateLedger()">Generate & Save Ledger</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="container-fluid mt-2">
-        <div class="row align-items-stretch gx-2">        
-            <div class="card-container mt-4 w-100">
-                <div class="card"><h5>Remaining Principal</h5><h3 id="remainingPrincipal">0</h3></div>
-                <div class="card"><h5>Total Society Cutting</h5><h3 id="totalSocietyCutting">0</h3></div>
-                <div class="card"><h5>Actual Cutting</h5><h3 id="actualCutting">0</h3></div>
-                <div class="card"><h5>Difference</h5><h3 id="difference">0</h3></div>
-                <div class="card"><h5>Loan Closure</h5><h3 id="loanClosure">0</h3></div>
-                <div class="card"><h5>Sum Total Society Cutting</h5><h3 id="sumTotalSociety">0</h3></div>
-                <div class="card"><h5>Sum Actual Cutting</h5><h3 id="sumActualCutting">0</h3></div>
-                <div class="card"><h5>Sum Difference</h5><h3 id="sumDifference">0</h3></div>
+        <div class="row gx-3 mb-4">
+            <div class="col-md-3">
+                <div class="card p-3" style="background: #121212; border-left: 4px solid #FF5733; border-radius: 10px;">
+                    <h6 style="color: #888; font-size: 12px; text-transform: uppercase;">Current Outstanding</h6>
+                    <h3 id="socOutstanding" style="color: #FF5733; font-weight: bold; margin: 0;">₹0</h3>
+                </div>
             </div>
-         </div>
-    </div>
-    
-    <div class="table-container mt-4">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>MONTH & YEAR</th>
-                    <th>PRINCIPAL BALANCE</th>
-                    <th>MONTHLY INTEREST</th>
-                    <th>TOTAL SOC CUTTING</th>
-                    <th>ACTUAL SOC CUTTING</th>
-                    <th>DIFFERENCE</th>
-                </tr>
-            </thead>
-            <tbody id="loanTable"></tbody>
-        </table>
-    </div>
-</div>
+            <div class="col-md-3">
+                <div class="card p-3" style="background: #121212; border-left: 4px solid #0FA4AF; border-radius: 10px;">
+                    <h6 style="color: #888; font-size: 12px; text-transform: uppercase;">Upcoming Deduction</h6>
+                    <h3 id="socEmi" style="color: #0FA4AF; font-weight: bold; margin: 0;">₹0</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3" style="background: #121212; border-left: 4px solid #28A745; border-radius: 10px;">
+                    <h6 style="color: #888; font-size: 12px; text-transform: uppercase;">Principal Paid to Date</h6>
+                    <h3 id="socPrincipalPaid" style="color: #28A745; font-weight: bold; margin: 0;">₹0</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3" style="background: #121212; border-left: 4px solid #FACC15; border-radius: 10px;">
+                    <h6 style="color: #888; font-size: 12px; text-transform: uppercase;">Interest Paid to Date</h6>
+                    <h3 id="socInterestPaid" style="color: #FACC15; font-weight: bold; margin: 0;">₹0</h3>
+                </div>
+            </div>
+        </div>
 
-<script>
-function updateDateTime() {
-    const now = new Date();
-    const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
-    const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
-    document.getElementById("systemDate").textContent = now.toLocaleDateString('en-US', dateOptions);
-    document.getElementById("systemTime").textContent = now.toLocaleTimeString('en-US', timeOptions);
-}
-setInterval(updateDateTime, 1000);
-updateDateTime();
-</script>
-<script src="assets/js/data.js"></script>
-<script src="assets/js/dashboard.js"></script>
-<script src="assets/js/main/app.js"></script>
-<script src="assets/js/main/profile-btn.js"></script>
-<script src="assets/js/js.cookie.min.js"></script>
+        <div class="card mb-4" style="background: #121212; border: none; border-radius: 10px; padding: 20px;">
+            <h6 style="color: #AFDDE5; font-size: 14px; margin-bottom: 15px;">Loan Repayment Progress (Real-Time)</h6>
+            <div class="progress" style="height: 25px; background-color: #222; border-radius: 12px;">
+                <div id="socProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%; background-color: #0FA4AF; color: #121212; font-weight: bold; font-size: 12px;">
+                    0% Paid
+                </div>
+            </div>
+        </div>
+
+        <div class="table-wrapper" style="height: 400px; overflow-y: auto; background: #121212; border-radius: 10px; padding: 10px;">
+            <table class="modern-table" style="width: 100%; text-align: left;">
+                <thead style="position: sticky; top: 0; background: #1A1A1A; z-index: 5;">
+                    <tr>
+                        <th style="padding: 10px; color: #0FA4AF;">Month/Year</th>
+                        <th style="padding: 10px; color: #0FA4AF;">Total Cut</th>
+                        <th style="padding: 10px; color: #0FA4AF;">Principal Cut</th>
+                        <th style="padding: 10px; color: #0FA4AF;">Interest Cut</th>
+                        <th style="padding: 10px; color: #0FA4AF;">Remaining Balance</th>
+                    </tr>
+                </thead>
+                <tbody id="societyTableBody">
+                    <tr><td colspan="5" class="text-center text-muted py-4">Click "Loan Settings" to generate your ledger.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // System Clock
+        function updateDateTime() {
+            const now = new Date();
+            const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+            
+            const sysDate = document.getElementById("systemDate");
+            const sysTime = document.getElementById("systemTime");
+            
+            if (sysDate) sysDate.textContent = now.toLocaleDateString('en-US', dateOptions);
+            if (sysTime) sysTime.textContent = now.toLocaleTimeString('en-US', timeOptions);
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime(); 
+    </script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main/society.js"></script>
+	<script src="assets/js/main/app.js"></script>
 </body>
 </html>
