@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Control Room</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <style>
+        .neo-card {
+            background: linear-gradient(145deg, #121212, #181818); 
+            border: 1px solid #2a2a2a; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .heat-bar-container {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #222;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .mini-progress {
+            height: 4px; 
+            background-color: #333; 
+            border-radius: 5px; 
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body class="dark-theme">
+
+<div class="sidebar">
+    <div class="menu-button-wrapper">
+        <button class="menu-button">
+            <img src="icons/menu.png" alt="Menu Icon" class="icon"> <span>Menu</span>
+        </button>
+    </div>
+    <ul>
+        <li><a href="dashboard.html"><img src="icons/dashboard.png" alt="Dashboard Icon" class="icon"> <span>Dashboard</span></a></li>
+        <li><a href="budget.html" class="active"><img src="icons/salary.png" alt="Budget Icon" class="icon"> <span>Budget Control</span></a></li>
+        <li><a href="transaction.html"><img src="icons/transactions.png" alt="Transactions Icon" class="icon"> <span>Transaction Tables</span></a></li>
+        <li><a href="society.html"><img src="icons/society.png" alt="Society Icon" class="icon"> <span>Society Cutting</span></a></li>
+    </ul>
+</div>
+
+<div class="main-content" id="mainContent">
+    <div class="container-fluid mt-2"> 
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 pt-2 pe-3">
+            <h2 style="font-weight: 700; color: #AFDDE5; margin: 0;">Budget Control Room</h2>
+            
+            <div class="d-flex align-items-center px-3 py-1 rounded" style="background: #1A1A1A; border: 1px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                <button id="prevMonth" class="btn btn-sm border-0" style="color: #0FA4AF; font-size: 16px;">&#10094;</button>
+                <div id="currentMonthDisplay" class="text-center text-light mx-3" style="font-size: 13px; font-weight: bold; min-width: 120px;">Loading...</div>
+                <button id="nextMonth" class="btn btn-sm border-0" style="color: #0FA4AF; font-size: 16px;">&#10095;</button>
+            </div>
+
+            <div class="text-end d-none d-sm-block">
+                <div id="systemDate" style="font-size: 14px; font-weight: bold; color: #0FA4AF;"></div>
+                <div id="systemTime" style="font-size: 12px; color: #888;"></div>
+            </div>
+        </div>
+
+        <div id="customCalendar" style="display: none;"></div>
+
+        <div class="row gx-3 mb-4 align-items-stretch">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <div class="neo-card p-4 h-100 text-center d-flex flex-column justify-content-center" style="position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 200px; height: 100px; background: rgba(15, 164, 175, 0.2); filter: blur(50px);"></div>
+                    <h6 style="color: #888; text-transform: uppercase; letter-spacing: 1.5px; font-size: 11px; z-index: 1;">Daily "Wants" Allowance</h6>
+                    <h1 id="safeToSpendTxt" style="color: #0FA4AF; font-size: 52px; font-weight: 800; margin: 10px 0; z-index: 1;">₹0</h1>
+                    <p style="color: #aaa; font-size: 13px; margin: 0; z-index: 1;">You can safely spend this much today on fun without breaking your 30% rule.</p>
+                    <div id="cycleDaysTxt" style="font-size: 11px; color: #666; margin-top: 15px; font-weight: bold; z-index: 1;">Calculating days...</div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="neo-card p-4 h-100 d-flex flex-column justify-content-center" style="border-left: 4px solid #FACC15;">
+                    <h5 style="color: #FACC15; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 24px;">💡</span> AI Insight
+                    </h5>
+                    <p id="insightTxt" style="color: #E0E0E0; font-size: 15px; line-height: 1.6; margin-top: 10px;">
+                        Upload your latest statement or wait for the cycle data to load to get your personalized spending insight.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row gx-3">
+            <div class="col-md-4 mb-3">
+                <div class="neo-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span style="color: #E0E0E0; font-size: 15px; font-weight: 700;">🏠 Needs (60%)</span>
+                        <span id="needsPct" style="color: #0FA4AF; font-weight: bold;">0%</span>
+                    </div>
+                    <div class="mb-2">
+                        <span id="spentNeedsTxt" style="color: #FFF; font-size: 22px; font-weight: 700;">₹0</span>
+                        <span id="limitNeedsTxt" style="color: #888; font-size: 12px;"> / ₹0</span>
+                    </div>
+                    <div class="progress mb-4" style="height: 10px; background-color: #222; border-radius: 10px; border: 1px solid #333;">
+                        <div id="barNeeds" class="progress-bar" style="width: 0%; background: linear-gradient(90deg, #0FA4AF, #00d2ff); box-shadow: 0 0 10px rgba(15,164,175,0.4);"></div>
+                    </div>
+                    <h6 style="color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Top Drains</h6>
+                    <div id="needsList"></div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="neo-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span style="color: #E0E0E0; font-size: 15px; font-weight: 700;">🛍️ Wants (30%)</span>
+                        <span id="wantsPct" style="color: #FACC15; font-weight: bold;">0%</span>
+                    </div>
+                    <div class="mb-2">
+                        <span id="spentWantsTxt" style="color: #FFF; font-size: 22px; font-weight: 700;">₹0</span>
+                        <span id="limitWantsTxt" style="color: #888; font-size: 12px;"> / ₹0</span>
+                    </div>
+                    <div class="progress mb-4" style="height: 10px; background-color: #222; border-radius: 10px; border: 1px solid #333;">
+                        <div id="barWants" class="progress-bar" style="width: 0%; background: linear-gradient(90deg, #FACC15, #ff9f43); box-shadow: 0 0 10px rgba(250,204,21,0.4);"></div>
+                    </div>
+                    <h6 style="color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Top Drains</h6>
+                    <div id="wantsList"></div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="neo-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span style="color: #E0E0E0; font-size: 15px; font-weight: 700;">📈 Savings (10%)</span>
+                        <span id="savingsPct" style="color: #28A745; font-weight: bold;">0%</span>
+                    </div>
+                    <div class="mb-2">
+                        <span id="spentSavingsTxt" style="color: #FFF; font-size: 22px; font-weight: 700;">₹0</span>
+                        <span id="limitSavingsTxt" style="color: #888; font-size: 12px;"> / ₹0</span>
+                    </div>
+                    <div class="progress mb-4" style="height: 10px; background-color: #222; border-radius: 10px; border: 1px solid #333;">
+                        <div id="barSavings" class="progress-bar" style="width: 0%; background: linear-gradient(90deg, #28A745, #20c997); box-shadow: 0 0 10px rgba(40,167,69,0.4);"></div>
+                    </div>
+                    <h6 style="color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Top Contributions</h6>
+                    <div id="savingsList"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+<script>
+// Clock Script
+function updateDateTime() {
+    const now = new Date();
+    const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+    const sysDate = document.getElementById("systemDate");
+    const sysTime = document.getElementById("systemTime");
+    if (sysDate) sysDate.textContent = now.toLocaleDateString('en-US', dateOptions);
+    if (sysTime) sysTime.textContent = now.toLocaleTimeString('en-US', timeOptions);
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
+</script>
+
+<script src="assets/js/js.cookie.min.js"></script>
+<script src="assets/js/xlsx.full.min.js"></script>
+<script src="assets/js/main/calendar.js"></script> 
+<script src="assets/js/main/app.js"></script>
+<script src="assets/js/main/budget.js"></script> 
+
+</body>
+</html>

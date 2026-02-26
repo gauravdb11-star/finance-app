@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 3. Load transactions from LocalStorage (Persistent across logins)
+// 3. Load transactions from LocalStorage (Persistent across logins)
     const storedData = localStorage.getItem("transactions");
     if (storedData) {
         window.transactions = JSON.parse(storedData);
@@ -24,9 +24,13 @@ document.addEventListener("DOMContentLoaded", function () {
             if (typeof processTransactions === "function") processTransactions();
         } else if (window.location.pathname.includes("transaction.html")) {
             if (typeof updateTable === "function") updateTable(window.transactions);
+        } else if (window.location.pathname.includes("budget.html")) {
+            // NEW: Push the data into the calendar engine for the Budget Page
+            if (typeof updateCalendarEvents === "function") {
+                updateCalendarEvents(window.transactions);
+            }
         }
     }
-
     // 4. Handle Excel Upload
     const excelFileInput = document.getElementById("excelFile");
     if (excelFileInput) {

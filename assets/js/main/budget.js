@@ -1,112 +1,142 @@
-﻿let budgetChartInstance = null; // Store chart instance globally to destroy it on update
+﻿window.updateBudget = function(cycleData) {
+    if (!document.getElementById("safeToSpendTxt")) return; // Only run on budget.html
 
-window.updateBudget = function (filteredData) {
-    let totalIncome = 0;
+    // 1. YOUR DICTIONARY
+    const NEEDS = ["HOME LOAN", "HOSPITAL", "FOOD", "INSURANCE", "CREDIT CARD", "RENT", "GROCERIES", "UTILITIES", "BILLS", "EMI", "SOCIETY", "MEDICAL", "TRANSPORT", "FUEL"];
+    const WANTS = ["MOVIE", "RECHARGE", "TRAVEL", "MISC", "DINING", "ENTERTAINMENT", "SHOPPING", "SUBSCRIPTIONS", "ZOMATO", "SWIGGY"];
+    const SAVINGS = ["INVESTMENT", "STOCKS", "MUTUAL FUNDS", "SAVINGS", "PPF", "FD"];
+
+    let spentNeeds = 0, spentWants = 0, spentSavings = 0, maxDeposit = 0;
     
-    let spending = {
-        needs: 0, // 60% Target
-        wants: 0, // 30% Target
-        savings: 0 // 10% Target
-    };
+    // Subcategory trackers
+    let breakdown = { needs: {}, wants: {}, savings: {} };
 
-    // Calculate totals from filtered data
-    filteredData.forEach(row => {
-        const deposit = parseFloat(row["Deposit Amt."] || 0);
-        const withdrawal = parseFloat(row["Withdrawal Amt."] || 0);
-        const category = row.Category || "Uncategorized";
+    // 2. SCAN AND SORT DATA
+    if (cycleData && cycleData.length > 0) {
+        cycleData.forEach(row => {
+            let deposit = parseFloat(row["Deposit Amt."] || 0);
+            let withdrawal = parseFloat(row["Withdrawal Amt."] || 0);
+            let cat = (row.Category || "UNCATEGORIZED").toString().toUpperCase();
 
-        totalIncome += deposit;
+            if (deposit > maxDeposit) maxDeposit = deposit;
 
-        if (withdrawal > 0) {
-            if (["HOME LOAN", "HOSPITAL", "FOOD", "INSURANCE", "CREDIT CARD"].includes(category)) {
-                spending.needs += withdrawal;
-            } else if (["MOVIE", "RECHARGE", "TRAVEL", "MISC", "Uncategorized"].includes(category)) {
-                spending.wants += withdrawal;
-            } else if (["INVESTMENT"].includes(category)) {
-                spending.savings += withdrawal;
+            if (withdrawal > 0) {
+                if (NEEDS.includes(cat)) {
+                    spentNeeds += withdrawal;
+                    breakdown.needs[cat] = (breakdown.needs[cat] || 0) + withdrawal;
+                } else if (WANTS.includes(cat) || cat === "UNCATEGORIZED") {
+                    spentWants += withdrawal;
+                    let displayCat = cat === "UNCATEGORIZED" ? "MISC" : cat;
+                    breakdown.wants[displayCat] = (breakdown.wants[displayCat] || 0) + withdrawal;
+                } else if (SAVINGS.includes(cat)) {
+                    spentSavings += withdrawal;
+                    breakdown.savings[cat] = (breakdown.savings[cat] || 0) + withdrawal;
+                }
             }
-        }
-    });
-
-    // Define Budget Targets (60-30-10 Rule)
-    const budget = {
-        needs: totalIncome * 0.60,
-        wants: totalIncome * 0.30,
-        savings: totalIncome * 0.10
-    };
-
-    // Update the UI Progress Bars and Text
-    updateProgressUI("need", budget.needs, spending.needs);
-    updateProgressUI("want", budget.wants, spending.wants);
-    updateProgressUI("saving", budget.savings, spending.savings);
-
-    // Update Available Cash
-    const availableCashEl = document.getElementById("availableCash");
-    if (availableCashEl) {
-        availableCashEl.textContent = new Intl.NumberFormat('en-IN').format(totalIncome - (spending.needs + spending.wants + spending.savings));
+        });
     }
 
-    // Render the Budget Donut Chart
-    renderBudgetDonutChart(spending.needs, spending.wants, spending.savings, totalIncome);
+    // 3. CORE 60-30-10 MATH
+    let totalIncome = maxDeposit > 0 ? maxDeposit : 1; 
+    let limitNeeds = totalIncome * 0.60;
+    let limitWants = totalIncome * 0.30;
+    let limitSavings = totalIncome * 0.10;
+
+    let pctNeeds = (spentNeeds / limitNeeds) * 100;
+    let pctWants = (spentWants / limitWants) * 100;
+    let pctSavings = (spentSavings / limitSavings) * 100;
+
+    const formatMoney = (val) => new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(val);
+
+    // 4. DAILY BURN RATE MATH
+    let daysLeftInCycle = 30; // Default
+    const today = new Date();
+    
+    if (cycleData.length > 0) {
+        let lastRowDateStr = cycleData[0].Date; 
+        if (lastRowDateStr && lastRowDateStr.includes('-')) {
+            let parts = lastRowDateStr.split('-');
+            let cycleYear = parseInt(parts[2], 10);
+            let cycleMonth = parseInt(parts[1], 10) - 1;
+            
+            let cycleEnd = new Date(cycleYear, cycleMonth + 1, 0); 
+            let diffTime = cycleEnd - today;
+            let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays > 0 && diffDays <= 31) daysLeftInCycle = diffDays;
+            else if (diffDays <= 0) daysLeftInCycle = 1; 
+        }
+    }
+
+    let remainingWants = Math.max(0, limitWants - spentWants);
+    let dailySafeSpend = remainingWants / daysLeftInCycle;
+
+    // --- 5. UPDATE THE UI ---
+    
+    // Top Hero Cards
+    document.getElementById("safeToSpendTxt").textContent = `₹${formatMoney(dailySafeSpend)}`;
+    document.getElementById("cycleDaysTxt").textContent = `Based on ${daysLeftInCycle} days remaining in current cycle`;
+
+    // AI Insight Generator
+    let insightStr = "";
+    if (pctWants > 95) {
+        insightStr = `⚠️ Stop! You have used ${pctWants.toFixed(0)}% of your Wants budget. You need to stick to absolutely zero fun spending for the next few days.`;
+    } else if (pctNeeds > 100) {
+        insightStr = `🚨 Warning: Your essential bills exceeded 60% of your income. You will need to borrow from your Savings to cover the deficit.`;
+    } else if (pctSavings >= 100) {
+        insightStr = `🎉 Incredible! You already hit your 10% investing goal for this cycle. Anything extra you save now is pure wealth building.`;
+    } else if (dailySafeSpend > 1000) {
+        insightStr = `🍷 Looking good! You have a massive ₹${formatMoney(dailySafeSpend)} a day to spend on food, shopping, and entertainment. Enjoy yourself!`;
+    } else {
+        insightStr = `✅ You are pacing perfectly. Stick to ₹${formatMoney(dailySafeSpend)} a day and you will hit all your financial goals this month.`;
+    }
+    document.getElementById("insightTxt").textContent = insightStr;
+
+    // Main Battery Bars and Drill-Downs
+    const updateBucket = (name, spent, limit, pct, breakdownObj, color) => {
+        document.getElementById(`limit${name}Txt`).textContent = ` / ₹${formatMoney(limit)}`;
+        document.getElementById(`spent${name}Txt`).textContent = `₹${formatMoney(spent)}`;
+        document.getElementById(`${name.toLowerCase()}Pct`).textContent = `${Math.min(pct, 100).toFixed(0)}%`;
+        
+        let bar = document.getElementById(`bar${name}`);
+        bar.style.width = `${Math.min(pct, 100)}%`;
+        
+        // Turn red if overspending (except Savings!)
+        if (pct > 95 && name !== "Savings") {
+            bar.style.background = "linear-gradient(90deg, #FF5733, #ff3b30)";
+            bar.style.boxShadow = "0 0 10px rgba(255, 87, 51, 0.6)";
+            document.getElementById(`${name.toLowerCase()}Pct`).style.color = "#FF5733";
+        }
+
+        // Render Heat Bars (Top 3 Subcategories)
+        let listEl = document.getElementById(`${name.toLowerCase()}List`);
+        listEl.innerHTML = "";
+        
+        let sortedItems = Object.entries(breakdownObj).sort((a, b) => b[1] - a[1]).slice(0, 3);
+        
+        if (sortedItems.length === 0) {
+            listEl.innerHTML = `<div class="text-muted" style="font-size: 12px; text-align: center; padding: 10px;">No spending yet</div>`;
+        } else {
+            sortedItems.forEach(([catName, amount]) => {
+                let subPct = Math.min((amount / limit) * 100, 100); // What % of the total bucket did this category eat?
+                
+                listEl.innerHTML += `
+                    <div class="heat-bar-container">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span style="color:#E0E0E0; font-weight:600; font-size:12px;">${catName}</span>
+                            <span style="color:#aaa; font-size:12px;">₹${formatMoney(amount)}</span>
+                        </div>
+                        <div class="progress mini-progress">
+                            <div class="progress-bar" style="width: ${subPct}%; background-color: ${color};"></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    };
+
+    // Trigger UI updates with base colors for the Heat Bars
+    updateBucket("Needs", spentNeeds, limitNeeds, pctNeeds, breakdown.needs, "#0FA4AF");
+    updateBucket("Wants", spentWants, limitWants, pctWants, breakdown.wants, "#FACC15");
+    updateBucket("Savings", spentSavings, limitSavings, pctSavings, breakdown.savings, "#28A745");
 };
-
-function updateProgressUI(categoryPrefix, targetBudget, spentAmount) {
-    const totalEl = document.getElementById(`${categoryPrefix}Total`);
-    const spentEl = document.getElementById(`${categoryPrefix}Spent`);
-    const remainingEl = document.getElementById(`${categoryPrefix}Remaining`);
-    const progressEl = document.getElementById(`${categoryPrefix}Progress`);
-
-    if (!totalEl || !spentEl || !remainingEl || !progressEl) return;
-
-    const remaining = targetBudget - spentAmount;
-    let percentage = targetBudget > 0 ? (spentAmount / targetBudget) * 100 : 0;
-    
-    // Format Numbers
-    const format = (num) => new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(num);
-
-    totalEl.textContent = format(targetBudget);
-    spentEl.textContent = format(spentAmount);
-    remainingEl.textContent = format(remaining);
-
-    // Update Progress Bar visually
-    progressEl.style.width = `${Math.min(percentage, 100)}%`;
-    
-    // Change color to danger if over budget
-    if (percentage > 100) {
-        progressEl.classList.remove("bg-success", "bg-warning", "bg-danger");
-        progressEl.classList.add("bg-danger");
-    }
-}
-
-function renderBudgetDonutChart(needs, wants, savings, totalIncome) {
-    const ctx = document.getElementById("budgetChart");
-    if (!ctx) return;
-
-    if (budgetChartInstance) {
-        budgetChartInstance.destroy();
-    }
-
-    // If there is no income, show empty grey chart
-    const dataValues = totalIncome > 0 ? [needs, wants, savings] : [1];
-    const bgColors = totalIncome > 0 ? ['#DC3545', '#FFC107', '#28A745'] : ['#444444'];
-    const labels = totalIncome > 0 ? ['Needs (60%)', 'Wants (30%)', 'Savings (10%)'] : ['No Income Data'];
-
-    budgetChartInstance = new Chart(ctx.getContext('2d'), {
-        type: 'doughnut',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: dataValues,
-                backgroundColor: bgColors,
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom', labels: { color: "#FFFFFF", font: { size: 10 } } }
-            }
-        }
-    });
-}
