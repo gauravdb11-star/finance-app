@@ -49,5 +49,5 @@ function logout() {
         Cookies.remove("loggedIn");
     }
     
-    window.location.href = "login.html";
+    window.location.href = "index.html";
 }
