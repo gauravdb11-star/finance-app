@@ -32,7 +32,8 @@ window.renderCharts = function(filteredData) {
     // Apply exact values to matching IDs
     Object.keys(categoryMap).forEach(category => {
         // Find the HTML element where ID exactly matches the Category string (e.g., id="HOME LOAN")
-        const valueElement = document.getElementById(category);
+        const safeId = category.replace(/\s+/g, '_'); 
+		const valueElement = document.getElementById(safeId);
         if (valueElement) {
             const amount = categoryMap[category];
             valueElement.textContent = new Intl.NumberFormat("en-IN", { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);

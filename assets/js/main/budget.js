@@ -6,7 +6,7 @@
     const WANTS = ["MOVIE", "RECHARGE", "TRAVEL", "MISC", "DINING", "ENTERTAINMENT", "SHOPPING", "SUBSCRIPTIONS", "ZOMATO", "SWIGGY"];
     const SAVINGS = ["INVESTMENT", "STOCKS", "MUTUAL FUNDS", "SAVINGS", "PPF", "FD"];
 
-    let spentNeeds = 0, spentWants = 0, spentSavings = 0, maxDeposit = 0;
+    let spentNeeds = 0, spentWants = 0, spentSavings = 0, totalIncome = 0;
     
     // Subcategory trackers
     let breakdown = { needs: {}, wants: {}, savings: {} };
@@ -18,7 +18,7 @@
             let withdrawal = parseFloat(row["Withdrawal Amt."] || 0);
             let cat = (row.Category || "UNCATEGORIZED").toString().toUpperCase();
 
-            if (deposit > maxDeposit) maxDeposit = deposit;
+            if (deposit > 0) totalIncome += deposit;
 
             if (withdrawal > 0) {
                 if (NEEDS.includes(cat)) {
@@ -37,7 +37,7 @@
     }
 
     // 3. CORE 60-30-10 MATH
-    let totalIncome = maxDeposit > 0 ? maxDeposit : 1; 
+    
     let limitNeeds = totalIncome * 0.60;
     let limitWants = totalIncome * 0.30;
     let limitSavings = totalIncome * 0.10;

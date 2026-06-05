@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/sidebar.css">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         .neo-card {
             background: linear-gradient(145deg, #121212, #181818); 
@@ -57,10 +58,21 @@
                 <button id="nextMonth" class="btn btn-sm border-0" style="color: #0FA4AF; font-size: 16px;">&#10095;</button>
             </div>
 
-            <div class="text-end d-none d-sm-block">
-                <div id="systemDate" style="font-size: 14px; font-weight: bold; color: #0FA4AF;"></div>
-                <div id="systemTime" style="font-size: 12px; color: #888;"></div>
-            </div>
+            <div class="col-md-3 text-end d-flex justify-content-end align-items-center gap-3">
+				<div class="text-end d-none d-sm-block">
+				<div id="systemDate" style="font-size: 14px; font-weight: bold; color: #0FA4AF;"></div>
+				<div id="systemTime" style="font-size: 12px; color: #888;"></div>
+				</div>
+				<div style="position: relative;">
+					<button class="profile-btn" id="profileButton">
+					<img src="icons/your-profile.jpg" alt="Profile" style="width: 40px; border-radius: 50%;">
+					</button>
+					<div class="profile-dropdown" id="profileDropdown">
+						<p id="usernameDisplay">User Name</p>
+						<button class="logout-button" id="logoutBtn">Logout</button>
+					</div>
+				</div>
+			</div>
         </div>
 
         <div id="customCalendar" style="display: none;"></div>
@@ -159,7 +171,7 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);
 updateDateTime();
 </script>
-
+<script src="assets/js/main/profile-btn.js"></script>
 <script src="assets/js/js.cookie.min.js"></script>
 <script src="assets/js/xlsx.full.min.js"></script>
 <script src="assets/js/main/calendar.js"></script> 
