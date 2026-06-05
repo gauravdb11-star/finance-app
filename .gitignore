@@ -1,0 +1,8 @@
+# Ignore the data folder completely
+data/
+
+# Ignore all financial file types just in case
+*.csv
+*.xlsx
+*.xls
+*.json
